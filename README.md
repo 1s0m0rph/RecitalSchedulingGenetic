@@ -1,0 +1,1 @@
+An implementation of a genetic algorithm for the purpose of solving the Recital Scheduling Constraint Satisfaction Problem (CSP), which is itself a special case of the NP-complete test scheduling problem.
