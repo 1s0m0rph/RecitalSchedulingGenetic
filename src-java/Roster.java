@@ -1,9 +1,13 @@
 import java.util.ArrayList;
 import java.util.Random;
+
+/*
+Keeps track of the classes we have to pick from. Really, this is an external sort of class for interfacing with some kind of hypothetical database
+ */
 public class Roster
 {
 	ArrayList<Integer>[] C;//set of classes
-	Random rn;
+	Random rn;//universal random number generator; use this to guarantee the same roster every time given the same seed
 	int numClasses, numStudents;
 	
 	public Roster(ArrayList<Integer>[] C, int numStudents, Random rn)
@@ -34,7 +38,11 @@ public class Roster
 		}
 		return a;
 	}
-	
+
+	/*
+	Generate numClasses random classes to populate the roster. Each class has a uniform number of students chosen
+	from the interval [1,sqrt(numStudents)]. This is to avoid massive classes that are both unrealistic and very hard to solve.
+	 */
 	void randClasses()
 	{
 		int[] stlist = new int[numStudents];
@@ -53,7 +61,10 @@ public class Roster
 			C[i] = nClass;
 		}
 	}
-	
+
+	/*
+	Print out the roster
+	 */
 	void show()
 	{
 		for(int i = 0; i < C.length; i++)
