@@ -1,11 +1,5 @@
 import numpy as np
-
-class InputException(Exception):
-	def __init__(self, text):
-		self.ermsg = text
-
-	def __str__(self):
-		return repr(self.ermsg)
+from util import *
 
 """
 This class keeps track of the classes we have to pick from. Ideally, this is an external sort of class for interfacing with some kind of hypothetical database

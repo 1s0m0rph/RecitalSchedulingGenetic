@@ -13,42 +13,17 @@ public class Genetic
 	Gene worstGene = null;
 	double DIE_PROBABILITY = 0.5;
 	double BREED_PROBABILITY = 0.5;
-	String fitnessMetric;
-
-	/*
-	Consturctor including the fitness metric elt {"fitness","quickChanges"}, see the other constructor
-	 */
-	public Genetic(Roster r, Random rn, double mp, int initialPopulation, String fitnessMetric)
-	{
-		L = new ArrayList();
-		this.r = r;
-		this.rn = rn;
-		mutationProbability = mp;
-		this.fitnessMetric = fitnessMetric;
-		initGenes(initialPopulation);
-	}
-
-	/*
-	Main class constructor
-
-	@param r the roster to pick from
-	@param rn the random number generator to use
-	@parma mp the probability of a mutation happening to a given gene
-	@param intialPopulation the initial population
-	 */
+//	double HIGH_FITNESS_BIAS_DROP_PROBABILITY = 0.01;//how likely are we to drop an arbitrary individual, regardless of fitneses
+	
 	public Genetic(Roster r, Random rn, double mp, int initialPopulation)
 	{
 		L = new ArrayList();
 		this.r = r;
 		this.rn = rn;
 		mutationProbability = mp;
-		fitnessMetric = "fitness";
 		initGenes(initialPopulation);
 	}
-
-	/*
-	Display the current living population
-	 */
+	
 	void show()
 	{
 		for(int i = 0; i < L.size(); i++)
@@ -61,13 +36,8 @@ public class Genetic
 			System.out.println(L.get(i).g[L.get(i).g.length-1] + ";\tFitness:\t" + L.get(i).fitness);
 		}
 	}
-
-	/*
-	Initialize the genes for the population
-
-	@param pop the initial population size
-	 */
-	private void initGenes(int pop)
+	
+	void initGenes(int pop)
 	{
 		for(int i = 0; i < pop; i++)
 		{
@@ -79,10 +49,7 @@ public class Genetic
 				worstGene = L.get(i);
 		}
 	}
-
-	/*
-	get the average fitness of the living population
-	 */
+	
 	double avgFitness()
 	{
 		double sum = 0;
@@ -92,10 +59,7 @@ public class Genetic
 		}
 		return sum / (double)L.size();
 	}
-
-	/*
-	Print out a single solution
-	 */
+	
 	void showSolution(Gene g)
 	{
 		ArrayList<Integer>[] s = geneToSolution(g);
@@ -114,11 +78,8 @@ public class Genetic
 	{
 		showSolution(bestGene);
 	}
-
-	/*
-	Convert a gene from its representation as a Gene object to an array of integer vectors
-	 */
-	private ArrayList<Integer>[] geneToSolution(Gene gene)
+	
+	ArrayList<Integer>[] geneToSolution(Gene gene)
 	{
 		ArrayList<Integer>[] ordering = new ArrayList[r.numClasses];
 		for(int i = 0; i < r.numClasses; i++)
@@ -127,15 +88,7 @@ public class Genetic
 		}
 		return ordering;
 	}
-
-	/*
-	TODO: move all fitness functions into Gene class
 	
-	gets the fitness for Gene gene only using negative values. That is, returns the negative of the number of gap-0 quick changes in the gene
-
-	@param gene the gene to evaluate the fitness of
-	@return the negative of the number of quick changes (the only negative fitness)
-	 */
 	double fitnessOnlyNegative(Gene gene)
 	{
 		//gives the value of the fitness function for gene gene
@@ -155,12 +108,10 @@ public class Genetic
 		}
 		return rs;
 	}
-
-	/*
-	Alternative to fitnessOnlyNegative. Also considers how far apart individual's pieces are
-	 */
-	double fitnessOptimizer(Gene gene)
+	
+	double fitness(Gene gene)
 	{
+		//gives the value of the fitness function for gene gene
 		ArrayList<Integer>[] ordering = geneToSolution(gene);
 		int[] lastSeen = new int[r.numStudents];
 		for(int i = 0; i < lastSeen.length; i++)
@@ -179,37 +130,16 @@ public class Genetic
 		}
 		return rs;
 	}
-
-	/*
-	wrapper for fitness functions
-	 */
-	double fitness(Gene gene)
-	{
-		if(fitnessMetric.equals("quickChanges"))
-			return -fitnessOnlyNegative(gene);
-		else if (fitnessMetric.equals("fitness"))
-			return fitnessOptimizer(gene);
-		else
-			return -1.;
-	}
-
-	/*
-	Get n natural numbers, starting from 0, in an int array
-	 */
-	private int[] nats(int n)
+	
+	int[] nats(int n)
 	{
 		int[] r = new int[n];
 		for(int i = 0; i < n; i++)
 			r[i] = i;
 		return r;
 	}
-
-	/*
-	Shuffle the array a in place in linear time
-
-	@return the shuffled array
-	 */
-	private int[] shuffle(int[] a)
+	
+	int[] shuffle(int[] a)
 	{
 		for(int i = 0; i < a.length; i++)
 		{
@@ -220,13 +150,8 @@ public class Genetic
 		}
 		return a;
 	}
-
-	/*
-	Shuffle the ArrayList a in place in linear time
-
-	@return the shuffled array
-	 */
-	private ArrayList shuffle(ArrayList a)
+	
+	ArrayList shuffle(ArrayList a)
 	{
 		for(int i = 0; i < a.size(); i++)
 		{
@@ -237,10 +162,7 @@ public class Genetic
 		}
 		return a;
 	}
-
-	/*
-	Deprecated method that calculates a probability that an individual gene breeds proportional to its fitness
-	 */
+	
 	double breedProbability(Gene gene)
 	{
 		double fit = gene.fitness;
@@ -250,7 +172,7 @@ public class Genetic
 	
 	/*
 	breed the whole population together, probability of an individual being allowed to breed is proportional to their fitness
-	bias towards high fitness individuals breeding with other high fitness individuals.
+	bais towards high fitness individuals breeding with other high fitness individuals
 	 */
 	void heat()
 	{
@@ -259,7 +181,7 @@ public class Genetic
 		for(int i = 0; i < L.size(); i++)
 			tmpsh.add(L.get(i));
 		tmpsh = shuffle(tmpsh);
-		L = partitionDesc(L);
+		tmpsh = partitionDesc(tmpsh);
 		for(int i = 0; breedingPopulation.size() < (int)(r.numClasses * BREEDING_POPULATION_PROPORTION) && i < L.size(); i++)
 		{
 			if(rn.nextDouble() < BREED_PROBABILITY)
@@ -278,42 +200,39 @@ public class Genetic
 		
 		select();
 	}
-
-	/*
-	Combine parent1 and parent2 to produce DAUGHTERS_PER_PAIR daughter genes, then mutate them
-	 */
+	
 	void breed(Gene parent1, Gene parent2)
 	{
 		//2 daughters from each pair of parents for now
-		//select uniformly at random half the stuff from parent 1, and the complement from the other so that each daughter is a complete solution
+		//select uniformly at random half the stuff from parent 1, and the complement from the other
 		//add each daughter to the population when done
 		for(int i = 0; i < DAUGHTERS_PER_PAIR; i++)
 		{
 			int[] dauo = new int[r.numClasses];
 			int[] nsh = shuffle(nats(r.numClasses));
-			int[] idxp1 = new int[r.numClasses>>1];//what indexes do we take from parent 1?
-			int[] idxp2 = new int[r.numClasses - (r.numClasses >> 1)];//what indexes do we take from parent 2?
-			for(int k = 0; k < idxp1.length; k++)
+			int idxp1 = r.numClasses>>1;//what indexes do we take from parent 1?
+			int idxp2 = r.numClasses - (r.numClasses >> 1);//what indexes do we take from parent 2?
+			for(int k = 0; k < idxp1; k++)
 			{
-				dauo[idxp1[k]] = parent1.g[idxp1[k]];
+				dauo[nsh[k]] = parent1.g[nsh[k]];
 			}
-			for(int k = 0; k < idxp1.length; k++)
+			for(int k = idxp1; k < idxp1 + idxp2; k++)
 			{
-				dauo[idxp2[k]] = parent1.g[idxp2[k]];
+				dauo[nsh[k]] = parent1.g[nsh[k]];
 			}
 			Gene daughter = new Gene(dauo,rn,mutationProbability);
-			daughter.mutate();//mutate the daughter
+			daughter.mutate();
 			daughter.fitness = fitness(daughter);
 			if(bestGene == null || daughter.fitness > bestGene.fitness)
 				bestGene = daughter;
 			if(worstGene == null || daughter.fitness < worstGene.fitness)
 				worstGene = daughter;
-			L.add(daughter);//add the daughter to the living population
+			L.add(daughter);
 		}
 	}
 	
 	/*
-	depreacated method to determine the likelihood of a given gene dying, inversely proportional to its fitness
+	how likely is gene to die given its fitness?
 	 */
 	double dieProbability(Gene gene)
 	{
@@ -329,13 +248,7 @@ public class Genetic
 		a.set(idx2,tmp);
 		return a;
 	}
-
-	/*
-	quicksort partition function, used to give stochastic preference to worse genes during selection
-
-	@param a the arraylist to partition
-	@return the partitioned array
-	 */
+	
 	ArrayList<Gene> partitionAsc(ArrayList<Gene> a)
 	{
 		int pivIdx = rn.nextInt(a.size());
@@ -350,13 +263,7 @@ public class Genetic
 		a = swap(a,j,a.size()-1);
 		return a;
 	}
-
-	/*
-	quicksort partition function (descending), used to give stochastic preference to better genes during breeding
-
-	@param a the arraylist to partition
-	@return the partitioned array
-	 */
+	
 	ArrayList<Gene> partitionDesc(ArrayList<Gene> a)
 	{
 		int pivIdx = rn.nextInt(a.size());
@@ -371,13 +278,10 @@ public class Genetic
 		a = swap(a,j,a.size()-1);
 		return a;
 	}
-
-	/*
-	//kill off some of the population, with stochastic priority going to the least fit members. i.e. kill off the less fit genes with higher probability
-	 */
+	
 	void select()
 	{
-
+		//kill off some of the population, with stochastic priority going to the least fit members. i.e. kill off the less fit genes with higher probability; probability is inversely proportional to fitness
 		L = partitionAsc(L);
 		for(int i = 0; i < L.size()*POPULATION_MORTALITY_PROPORTION; i++)
 		{

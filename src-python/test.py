@@ -2,6 +2,7 @@ from roster import *
 from gene import *
 from genetic import *
 import numpy as np
+from util import *
 np.random.seed(40)#make the random numbers predictable
 
 
@@ -13,7 +14,7 @@ C = [[1],
 r = Roster(5,C=C)
 
 g = Genetic(r,0.01,25,fitnessMetric='quickChanges')
-g.bestGene.show()
+g.show()
 
 #testing stuff
 """

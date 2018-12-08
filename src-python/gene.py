@@ -1,5 +1,4 @@
 import numpy as np
-import roster as rst
 
 """
 Contains the gene representation of a class ordering (candidate solution), as well as all of the operations done on that gene involving *only* that gene
