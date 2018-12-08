@@ -34,6 +34,7 @@ class Gene:
 				temp = self.g[i]
 				self.g[i] = self.g[randIdx]
 				self.g[randIdx] = temp
+		self.fitness = self.getFitness()
 
 	def show(self,newline=True):
 		print("[",end='')

@@ -1,5 +1,3 @@
-# import numpy as np
-# from roster import *
 from gene import *
 from util import *
 
@@ -8,8 +6,6 @@ BREEDING_POPULATION_PROPORTION = 1./5.#how much of the population will actually 
 POPULATION_MORTALITY_PROPORTION = 2./5.#how much of the population will die w/ probability DIE_PROBABILITY each heat? For a constant population, this should be (DAUGHTERS_PER_PAIR*BREEDING_POPULATION_PROPORTION*BREED_PROBABILITY)/DIE_PROBABILITY
 BREED_PROBABILITY = 0.5
 DIE_PROBABILITY = 0.5
-
-
 
 class Genetic:
 	def __init__(self, roster, mutationProbability, initialPopulation, fitnessMetric = 'distance'):
@@ -57,9 +53,20 @@ class Genetic:
 			while k < numIndexFromParent1:
 				daughterIndicesList[shuffledNats[k]] = parent1.g[shuffledNats[k]]
 			while k < self.roster.numClasses:
-				daughterIndicesList[shuffledNats[k]] = parent1.g[shuffledNats[k]]
+				daughterIndicesList[shuffledNats[k]] = parent2.g[shuffledNats[k]]
 
+			daughter = Gene(self.mutationProbability,self.roster,ordering=daughterIndicesList,fitnessMetric=self.fitnessMetric)
+			daughter.mutate()
+			if daughter.fitness > self.bestGene.fitness:
+				self.bestGene = daughter
+			if daughter.fitness < self.worstGene.fitness:
+				self.worstGene = daughter
+			self.L.append(daughter)
 
+	"""
+	breed the whole population together, probability of an individual being allowed to breed is proportional to their fitness
+	bais towards high fitness individuals breeding with other high fitness individuals
+	"""
 	def heat(self):
 		breedingPopulation = []
 		tempShuffledL = self.L.copy()
@@ -73,10 +80,21 @@ class Genetic:
 			i+=1
 
 		#randomly pair selected individuals
-		np.random.shuffle(breedingPopulation)
+		np.random.shuffle(breedingPopulation)#maybe cut this step?
 		i = 0
 		while(i + 1 < len(breedingPopulation)):
 			parent1 = breedingPopulation[i]
 			parent2 = breedingPopulation[i+1]
-
+			self.breed(parent1,parent2)
 			i+=2
+
+		self.select()
+
+	"""
+	kill off some of the population, with stochastic priority going to the least fit members. i.e. kill off the less fit genes with higher probability; probability is inversely proportional to fitness
+	"""
+	def select(self):
+		partition(self.L,descending=False)
+		for i in range(int(len(self.roster.numClasses) * POPULATION_MORTALITY_PROPORTION)):
+			if np.random.choice([True,False],p=[DIE_PROBABILITY,1-DIE_PROBABILITY]):
+				del self.L[i]

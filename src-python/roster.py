@@ -1,4 +1,3 @@
-import numpy as np
 from util import *
 
 """
@@ -23,6 +22,7 @@ class Roster:
 			self.numClasses = len(C)
 		else:
 			self.numClasses = numClasses
+			self.randClasses()
 
 
 	"""
