@@ -129,6 +129,8 @@ public class Genetic
 	}
 
 	/*
+	TODO: move all fitness functions into Gene class
+	
 	gets the fitness for Gene gene only using negative values. That is, returns the negative of the number of gap-0 quick changes in the gene
 
 	@param gene the gene to evaluate the fitness of
