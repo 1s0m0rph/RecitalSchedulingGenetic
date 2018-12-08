@@ -218,7 +218,7 @@ public class Genetic
 			}
 			for(int k = idxp1; k < idxp1 + idxp2; k++)
 			{
-				dauo[nsh[k]] = parent1.g[nsh[k]];
+				dauo[nsh[k]] = parent2.g[nsh[k]];
 			}
 			Gene daughter = new Gene(dauo,rn,mutationProbability);
 			daughter.mutate();

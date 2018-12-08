@@ -49,10 +49,15 @@ class Genetic:
 		#select uniformly at random half the stuff from parent 1, and the complement from the other so that each daughter is a complete solution
 		#add each daughter to the population when done
 		for i in range(DAUGHTERS_PER_PAIR):
-			daughterIndicesList = []
+			daughterIndicesList = [0 for _ in range(self.roster.numClasses)]
 			shuffledNats = list(range(len(self.roster.numClasses)))
 			np.random.shuffle(shuffledNats)
-			indexFromParent1 = [
+			numIndexFromParent1 = self.roster.numClasses >> 1
+			k = 0
+			while k < numIndexFromParent1:
+				daughterIndicesList[shuffledNats[k]] = parent1.g[shuffledNats[k]]
+			while k < self.roster.numClasses:
+				daughterIndicesList[shuffledNats[k]] = parent1.g[shuffledNats[k]]
 
 
 	def heat(self):
