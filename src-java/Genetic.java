@@ -248,7 +248,7 @@ public class Genetic
 			tmpsh.add(L.get(i));
 		tmpsh = shuffle(tmpsh);
 		tmpsh = partitionDesc(tmpsh);
-		for(int i = 0; breedingPopulation.size() < (int)(r.numClasses * BREEDING_POPULATION_PROPORTION) && i < L.size(); i++)
+		for(int i = 0; breedingPopulation.size() < (int)(L.size() * BREEDING_POPULATION_PROPORTION) && i < L.size(); i++)
 		{
 			if(rn.nextDouble() < BREED_PROBABILITY)
 				//include this one

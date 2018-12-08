@@ -20,6 +20,9 @@ class Genetic:
 		self.worstGene = None
 		self.initGenes(initialPopulation)
 
+	def avgFitness(self):
+		return np.mean(np.array([self.L[i].fitness for i in range(len(self.L))]))
+
 	"""
 	precondition: self.L is empty list
 	"""
@@ -46,14 +49,16 @@ class Genetic:
 		#add each daughter to the population when done
 		for i in range(DAUGHTERS_PER_PAIR):
 			daughterIndicesList = [0 for _ in range(self.roster.numClasses)]
-			shuffledNats = list(range(len(self.roster.numClasses)))
+			shuffledNats = list(range(self.roster.numClasses))
 			np.random.shuffle(shuffledNats)
 			numIndexFromParent1 = self.roster.numClasses >> 1
 			k = 0
 			while k < numIndexFromParent1:
 				daughterIndicesList[shuffledNats[k]] = parent1.g[shuffledNats[k]]
+				k+=1
 			while k < self.roster.numClasses:
 				daughterIndicesList[shuffledNats[k]] = parent2.g[shuffledNats[k]]
+				k+=1
 
 			daughter = Gene(self.mutationProbability,self.roster,ordering=daughterIndicesList,fitnessMetric=self.fitnessMetric)
 			daughter.mutate()
@@ -73,7 +78,7 @@ class Genetic:
 		np.random.shuffle(tempShuffledL)
 		partition(tempShuffledL,descending=True)
 		i = 0
-		while (len(breedingPopulation) < int(self.roster.numClasses * BREEDING_POPULATION_PROPORTION)) and (i < len(self.L)):
+		while (len(breedingPopulation) < int(len(self.L) * BREEDING_POPULATION_PROPORTION)) and (i < len(self.L)):
 			if np.random.choice([True,False],p=[BREED_PROBABILITY,1-BREED_PROBABILITY]):
 				#this gene got lucky and gets to breed
 				breedingPopulation.append(tempShuffledL[i])
@@ -95,6 +100,6 @@ class Genetic:
 	"""
 	def select(self):
 		partition(self.L,descending=False)
-		for i in range(int(len(self.roster.numClasses) * POPULATION_MORTALITY_PROPORTION)):
+		for i in range(int(len(self.L) * POPULATION_MORTALITY_PROPORTION)):
 			if np.random.choice([True,False],p=[DIE_PROBABILITY,1-DIE_PROBABILITY]):
 				del self.L[i]

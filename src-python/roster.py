@@ -33,7 +33,7 @@ class Roster:
 		stlist = np.array(list(range(self.numStudents)))
 		np.random.shuffle(stlist)
 		for i in range(self.numClasses):
-			classSize = np.random.choice(range(1,np.sqrt(self.numStudents)+1))
+			classSize = np.random.choice(range(1,int(np.sqrt(self.numStudents)+1)))
 			newClass = stlist[:classSize]
 			np.random.shuffle(stlist)
 			self.C.append(newClass)
