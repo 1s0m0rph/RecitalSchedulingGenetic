@@ -33,7 +33,7 @@ public class test
 		int trials = 100;
 		for(int t = 0; t < trials; t++)
 		{
-			Genetic G = new Genetic(r, rn, 0.05, 140, "quickChanges");//change fitnessMetric to "fitness" for the optimization problem
+			Genetic G = new Genetic(r, rn, 0.05, 70, "quickChanges");//change fitnessMetric to "fitness" for the optimization problem
 			double avgFitnessLast = G.avgFitness();
 			int i = 0;
 			for(; i < 200; i++)
@@ -63,7 +63,7 @@ public class test
 		Genetic sol = new Genetic(r,rn,0.01,1);
 //		System.out.println("\nBest solution using fitness score (fitness: " + bestByFitnessRaw.fitness + "; quick changes: " + qcbfr + "):");
 //		sol.showSolution(bestByFitnessRaw);
-		System.out.println("\nBest solution using number of quick changes (fitness: " + bestByQC.fitness + "; quick changes: " + qcbqc + "):");
+		System.out.println("\nBest solution using number of quick changes (fitness: " + bestByQC.fitness + "; quick changes: " + qcbqc + "; generation: " + bestByQC.generation + "):");
 		sol.showSolution(bestByQC);
 //		System.out.println("\nBest solution using fitness score (fitness: " + bestByFitnessRaw.fitness + "; quick changes: " + qcbfr + "):");
 //		System.out.println("\nBest solution using number of quick changes (fitness: " + bestByQC.fitness + "; quick changes: " + qcbqc + "):");

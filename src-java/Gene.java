@@ -9,6 +9,7 @@ public class Gene
 	int[] g;//the gene's ordering of the classes, each number here is an index into the main roster
 	double mutationProbability = 0.001;//how likely a swap is to happen PER TRIAL
 	double fitness = 0;//how fit is the gene? Store this for constant time access
+	public int generation = 0;
 
 	/*
 	@param ordering What order are the classes in in this gene? Used when breeding into new genes

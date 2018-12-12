@@ -6,9 +6,9 @@ from util import *
 
 DAUGHTERS_PER_PAIR = 2
 BREEDING_POPULATION_PROPORTION = 1./5.#how much of the population will actually breed?
-MORTALITY_POPULATION_PROPORTION = 1./3.#how much of the population will die w/ probability DIE_PROBABILITY each heat?
-BREED_PROBABILITY = 0.55
-DIE_PROBABILITY = 0.5
+MORTALITY_POPULATION_PROPORTION = 2./5.#how much of the population will die w/ probability DIE_PROBABILITY each heat?
+BREED_PROBABILITY = 0.5
+DIE_PROBABILITY = 0.475
 
 #E[|L|] after heat = ~|L|
 

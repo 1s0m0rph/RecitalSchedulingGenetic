@@ -11,7 +11,7 @@ public class Genetic
 	double POPULATION_MORTALITY_PROPORTION = 2./5.;//how much of the population will die w/ probability DIE_PROBABILITY each heat? For a constant population, this should be (DAUGHTERS_PER_PAIR*BREEDING_POPULATION_PROPORTION*BREED_PROBABILITY)/DIE_PROBABILITY
 	Gene bestGene = null;
 	Gene worstGene = null;
-	double DIE_PROBABILITY = 0.5;
+	double DIE_PROBABILITY = 0.475;
 	double BREED_PROBABILITY = 0.5;
 	String fitnessMetric;
 
@@ -277,20 +277,39 @@ public class Genetic
 		//add each daughter to the population when done
 		for(int i = 0; i < DAUGHTERS_PER_PAIR; i++)
 		{
+			boolean[] inDaguhter = new boolean[r.numClasses];
 			int[] dauo = new int[r.numClasses];
+			for(int k = 0; k < r.numClasses; k++)
+				dauo[k] = -1;
 			int[] nsh = shuffle(nats(r.numClasses));
 			int idxp1 = r.numClasses>>1;//what indexes do we take from parent 1?
-			int idxp2 = r.numClasses - (r.numClasses >> 1);//what indexes do we take from parent 2?
+			//this can duplicate. Fix?
 			for(int k = 0; k < idxp1; k++)
 			{
 				dauo[nsh[k]] = parent1.g[nsh[k]];
+				inDaguhter[parent1.g[nsh[k]]] = true; //class parent1.g[nsh[k]] is already present in the daughter
 			}
-			for(int k = idxp1; k < r.numClasses; k++)
+			int lowestEmptyIndex = 0;//lowest index in the daughter gene that is not yet filled
+			while(dauo[lowestEmptyIndex] != -1)
+				lowestEmptyIndex++;
+			for(int k = 0; k < r.numClasses; k++)
 			{
-				dauo[nsh[k]] = parent2.g[nsh[k]];
+				//is this class already in d? i.e. was it added by parent1?
+				if(!inDaguhter[parent2.g[k]])
+				{
+					dauo[lowestEmptyIndex] = parent2.g[k];
+					while(lowestEmptyIndex < dauo.length && dauo[lowestEmptyIndex] != -1)
+						lowestEmptyIndex++;
+				}
 			}
 			Gene daughter = new Gene(dauo,rn,mutationProbability);
+			daughter.generation = parent1.generation>parent2.generation ? parent1.generation+1 : parent2.generation+1;
 			daughter.mutate();//mutate the daughter
+			if(!validGene(daughter))
+			{
+				System.out.println("INVALID GENE BRED!\n\n\n");
+				System.exit(-2);
+			}
 			daughter.fitness = fitness(daughter);
 			if(bestGene == null || daughter.fitness > bestGene.fitness)
 				bestGene = daughter;
@@ -362,5 +381,31 @@ public class Genetic
 			if(rn.nextDouble() < DIE_PROBABILITY)
 				L.remove(i);
 		}
+	}
+	
+	/*
+	Checks if a gene is valid. That is, if it satisfies the conditions:
+	g = [c1,c2,...,cn]
+	forall i, ci elt Nats(1,n)
+	not exist i,j st i != j ^ (ci = cj)
+	 */
+	boolean validGene(Gene g)
+	{
+		boolean[] allPresentCheck = new boolean[r.numClasses];//makes sure that all classes are present and there are no duplicates
+		for(int i = 0; i < r.numClasses; i++)
+		{
+			if(allPresentCheck[g.g[i]])
+				//there exists a duplicate
+				return false;
+			allPresentCheck[g.g[i]] = true;
+		}
+		//check to make sure nothing is false
+		for(int i = 0; i < r.numClasses; i++)
+		{
+			if(!allPresentCheck[i])
+				//class i is missing
+				return false;
+		}
+		return true;
 	}
 }

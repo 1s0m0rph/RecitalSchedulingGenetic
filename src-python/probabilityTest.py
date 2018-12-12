@@ -30,6 +30,8 @@ EV = [0 for _ in range(evsize)]
 # b = 0.25
 D = 2
 
+#how in hell does the EV of new genes depend on b?
+
 for t,b in enumerate(floatRange(1./evsize,1+(1./evsize),1./evsize)):
 	for _ in range(pow(2,len(a))):
 		breedswitch = False
