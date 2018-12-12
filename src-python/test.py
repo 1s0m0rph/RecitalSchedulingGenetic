@@ -8,19 +8,40 @@ initialPopulation = 140
 numClasses = 41
 numStudents = 80
 mutationProbability = 0.05
-MAX_HEATS = 200
+MAX_HEATS = 30
 fitnessMetric = 'quickChanges'
 
-"""
+
 #easily solved roster set up
-C = [[1],
-	 [0,1,3],
-	 [0,2,4],
-	 [2,4]]
-r = Roster(numStudents,C=C)
-"""
+# C = [[1],
+# 	 [0,1,3],
+# 	 [0,2,4],
+# 	 [2,4]]
+# r = Roster(numStudents,C=C)
+
 
 r = Roster(numStudents,numClasses=numClasses)
+
+# g = Genetic(r,mutationProbability,14,fitnessMetric='quickChanges')
+# for _ in range(17):
+# 	g.heat()
+# print(g.bestGene)
+#
+# exit()
+
+'''
+"""
+selection tests
+"""
+
+popsum = 0.
+for _ in range(100):
+	g = Genetic(r,mutationProbability,initialPopulation)
+	g.heat()
+	popsum += float(len(g.L))
+print((popsum/100.)/float(initialPopulation))
+exit()
+'''
 
 # g.show()
 
@@ -36,9 +57,9 @@ for epoch in range(epochs):
 	while(h < MAX_HEATS):
 		g.heat()
 		currentFitness = g.avgFitness()
-		if (h != 0) and ((avgFitnessLast > (currentFitness - tolerance)) and (avgFitnessLast < (currentFitness+tolerance))):
-			#convergence
-			break
+		# if (h != 0) and ((avgFitnessLast > (currentFitness - tolerance)) and (avgFitnessLast < (currentFitness+tolerance))):
+		# 	#convergence
+		# 	break
 		avgFitnessLast = currentFitness
 		h+=1
 	epochsUntilConvergenceSum += h
@@ -49,10 +70,10 @@ for epoch in range(epochs):
 	if (bestByQC is None) or (g.bestGene.fitness > bestByQC.fitness):
 		bestByQC = g.bestGene
 
-print("\nBest solution by number of quick changes, optimized with " + fitnessMetric + " (fitness: {:.5f}".format(bestByQC.fitnessDistance()) + "; quick changes: {:.0f}".format(-bestByQC.fitnessOnlyNegative()) + "):")
+print("\nBest solution by number of quick changes, optimized with " + fitnessMetric + " (fitness: {:.5f}".format(bestByQC.fitnessDistance()) + "; quick changes: {:.0f}".format(-bestByQC.fitnessOnlyNegative()) + "; generation: {:.0f}".format(bestByQC.generation) + ")")
 # bestByQC.show()
 
-print("\nAverage epochs until convergence:\t{:.5f}".format(float(epochsUntilConvergenceSum)/float(epochs)))
+print("\nAverage heats until convergence:\t{:.5f}".format(float(epochsUntilConvergenceSum)/float(epochs)))
 
 
 #testing stuff

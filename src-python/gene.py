@@ -14,6 +14,8 @@ class Gene:
 		self.fitness = 0
 		self.roster = roster
 		self.fitnessMetric = fitnessMetric
+		self.parents = []
+		self.generation = 0
 
 		if ordering is not None:
 			self.g = ordering
@@ -86,3 +88,6 @@ class Gene:
 			return self.fitnessDistance()
 		if self.fitnessMetric is 'quickChanges':
 			return self.fitnessOnlyNegative()
+
+	def __repr__(self):
+		return "Gene fitness: " + str(self.fitness)

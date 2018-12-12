@@ -1,11 +1,16 @@
 from gene import *
 from util import *
 
+#for constant population, BREED_PROBABILITY * BREEDING_POPULATION_PROPORTION * (DAUGHTERS_PER_PAIR / (parents per daughter)) must equal DIE_PROBABILITY * MORTALITY_POPULATION_PROPORTION
+#this simplifies to BREED_PROBABILITY * BREEDING_POPULATION_PROPORTION = DIE_PROBABILITY * MORTALITY_POPULATION_PROPORTION when each pair of parents exactly replaces themselves
+
 DAUGHTERS_PER_PAIR = 2
 BREEDING_POPULATION_PROPORTION = 1./5.#how much of the population will actually breed?
-POPULATION_MORTALITY_PROPORTION = 2./5.#how much of the population will die w/ probability DIE_PROBABILITY each heat? For a constant population, this should be (DAUGHTERS_PER_PAIR*BREEDING_POPULATION_PROPORTION*BREED_PROBABILITY)/DIE_PROBABILITY
-BREED_PROBABILITY = 0.5
+MORTALITY_POPULATION_PROPORTION = 1./3.#how much of the population will die w/ probability DIE_PROBABILITY each heat?
+BREED_PROBABILITY = 0.55
 DIE_PROBABILITY = 0.5
+
+#E[|L|] after heat = ~|L|
 
 class Genetic:
 	def __init__(self, roster, mutationProbability, initialPopulation, fitnessMetric = 'distance'):
@@ -48,16 +53,22 @@ class Genetic:
 		#select uniformly at random half the stuff from parent 1, and the complement from the other so that each daughter is a complete solution
 		#add each daughter to the population when done
 		for i in range(DAUGHTERS_PER_PAIR):
+			parent1g = list(parent1.g.copy())
+			parent2g = set(parent2.g.copy())
 			daughterIndicesList = [0 for _ in range(self.roster.numClasses)]
 			shuffledNats = list(range(self.roster.numClasses))
 			np.random.shuffle(shuffledNats)
 			numIndexFromParent1 = self.roster.numClasses >> 1
 			k = 0
 			while k < numIndexFromParent1:
-				daughterIndicesList[shuffledNats[k]] = parent1.g[shuffledNats[k]]
+				daughterIndicesList[shuffledNats[k]] = parent1g[shuffledNats[k]]
+				#somehow remove class parent1g[shuffledNats[k]] from parent2g
+				# del parent2g[shuffledNats[k]]
+				parent2g.remove(parent1g[shuffledNats[k]])
 				k+=1
-			while k < self.roster.numClasses:
-				daughterIndicesList[shuffledNats[k]] = parent2.g[shuffledNats[k]]
+			parent2g = list(parent2g)
+			for kp2 in range(len(parent2g)):
+				daughterIndicesList[shuffledNats[k]] = parent2g[kp2]
 				k+=1
 
 			daughter = Gene(self.mutationProbability,self.roster,ordering=daughterIndicesList,fitnessMetric=self.fitnessMetric)
@@ -66,6 +77,8 @@ class Genetic:
 				self.bestGene = daughter
 			if daughter.fitness < self.worstGene.fitness:
 				self.worstGene = daughter
+			daughter.parents = [parent1,parent2]
+			daughter.generation = max(parent1.generation,parent2.generation) + 1
 			self.L.append(daughter)
 
 	"""
@@ -100,6 +113,10 @@ class Genetic:
 	"""
 	def select(self):
 		partition(self.L,descending=False)
-		for i in range(int(len(self.L) * POPULATION_MORTALITY_PROPORTION)):
-			if np.random.choice([True,False],p=[DIE_PROBABILITY,1-DIE_PROBABILITY]):
-				del self.L[i]
+		newL = []
+		for i in range(int(len(self.L) * MORTALITY_POPULATION_PROPORTION)):
+			if not (np.random.choice([True,False],p=[DIE_PROBABILITY,1-DIE_PROBABILITY])):
+				newL.append(self.L[i])
+		for i in range(int(len(self.L) * MORTALITY_POPULATION_PROPORTION),len(self.L)):
+			newL.append(self.L[i])
+		self.L = newL
