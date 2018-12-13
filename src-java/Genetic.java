@@ -14,6 +14,7 @@ public class Genetic
 	double DIE_PROBABILITY = 0.475;
 	double BREED_PROBABILITY = 0.5;
 	String fitnessMetric;
+	int initialPopulation;
 
 	/*
 	Consturctor including the fitness metric elt {"fitness","quickChanges"}, see the other constructor
@@ -25,6 +26,7 @@ public class Genetic
 		this.rn = rn;
 		mutationProbability = mp;
 		this.fitnessMetric = fitnessMetric;
+		this.initialPopulation = initialPopulation;
 		initGenes(initialPopulation);
 	}
 
@@ -43,6 +45,7 @@ public class Genetic
 		this.rn = rn;
 		mutationProbability = mp;
 		fitnessMetric = "fitness";
+		this.initialPopulation = initialPopulation;
 		initGenes(initialPopulation);
 	}
 
@@ -242,6 +245,8 @@ public class Genetic
 	 */
 	void heat()
 	{
+		if(bestGene != null && bestGene.fitness == 0)//do nothing if we've already solved the problem
+			return;
 		ArrayList<Gene> breedingPopulation = new ArrayList();
 		ArrayList<Gene> tmpsh = new ArrayList(L.size());
 		for(int i = 0; i < L.size(); i++)
@@ -257,7 +262,7 @@ public class Genetic
 		
 		
 		//for now just randomly pair individuals
-		for(int i = 0; i+1 < breedingPopulation.size(); i += 2)
+		for(int i = 0; i+1 < breedingPopulation.size() && L.size() < initialPopulation<<1; i += 2)
 		{
 			Gene p1 = breedingPopulation.get(i);
 			Gene p2 = breedingPopulation.get(i+1);
@@ -374,7 +379,7 @@ public class Genetic
 	void select()
 	{
 		L = partitionAsc(L);
-		for(int i = 0; i < L.size()*POPULATION_MORTALITY_PROPORTION; i++)
+		for(int i = 0; i < L.size()*POPULATION_MORTALITY_PROPORTION && L.size() > initialPopulation>>1; i++)
 		{
 			if(rn.nextDouble() < DIE_PROBABILITY)
 				L.remove(i);
