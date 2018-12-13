@@ -23,6 +23,7 @@ class Genetic:
 		self.fitnessMetric = fitnessMetric
 		self.bestGene = None
 		self.worstGene = None
+		self.initialPopulation = initialPopulation
 		self.initGenes(initialPopulation)
 
 	def avgFitness(self):
@@ -101,7 +102,7 @@ class Genetic:
 		#randomly pair selected individuals
 		np.random.shuffle(breedingPopulation)#maybe cut this step?
 		i = 0
-		while i + 1 < len(breedingPopulation):
+		while (i + 1 < len(breedingPopulation)) and (len(self.L) < self.initialPopulation<<1): #length check to make sure the population doesn't get too big
 			parent1 = breedingPopulation[i]
 			parent2 = breedingPopulation[i+1]
 			self.breed(parent1,parent2)
@@ -115,12 +116,7 @@ class Genetic:
 	def select(self):
 		partition(self.L,descending=False)
 		for i in range(int(len(self.L) * MORTALITY_POPULATION_PROPORTION)):
+			if(len(self.L) <= int(self.initialPopulation>>1)):
+				return #don't let the population drop too far
 			if (np.random.uniform(0,1) < DIE_PROBABILITY):
 				del self.L[i]
-		# newL = []
-		# for i in range(int(len(self.L) * MORTALITY_POPULATION_PROPORTION)):
-		# 	if not (np.random.choice([True,False],p=[DIE_PROBABILITY,1-DIE_PROBABILITY])):
-		# 		newL.append(self.L[i])
-		# for i in range(int(len(self.L) * MORTALITY_POPULATION_PROPORTION),len(self.L)):
-		# 	newL.append(self.L[i])
-		# self.L = newL
