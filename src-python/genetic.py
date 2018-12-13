@@ -8,7 +8,7 @@ DAUGHTERS_PER_PAIR = 2
 BREEDING_POPULATION_PROPORTION = 1./5.#how much of the population will actually breed?
 MORTALITY_POPULATION_PROPORTION = 2./5.#how much of the population will die w/ probability DIE_PROBABILITY each heat?
 BREED_PROBABILITY = 0.5
-DIE_PROBABILITY = 0.475
+DIE_PROBABILITY = 0.41#why in hghel is this number need to different of java number?
 
 #E[|L|] after heat = ~|L|
 
@@ -53,23 +53,24 @@ class Genetic:
 		#select uniformly at random half the stuff from parent 1, and the complement from the other so that each daughter is a complete solution
 		#add each daughter to the population when done
 		for i in range(DAUGHTERS_PER_PAIR):
-			parent1g = list(parent1.g.copy())
-			parent2g = set(parent2.g.copy())
-			daughterIndicesList = [0 for _ in range(self.roster.numClasses)]
+			daughterIndicesList = [-1 for _ in range(self.roster.numClasses)]
 			shuffledNats = list(range(self.roster.numClasses))
 			np.random.shuffle(shuffledNats)
 			numIndexFromParent1 = self.roster.numClasses >> 1
+			inDaughter = [False for _ in range(self.roster.numClasses)]
 			k = 0
 			while k < numIndexFromParent1:
-				daughterIndicesList[shuffledNats[k]] = parent1g[shuffledNats[k]]
-				#somehow remove class parent1g[shuffledNats[k]] from parent2g
-				# del parent2g[shuffledNats[k]]
-				parent2g.remove(parent1g[shuffledNats[k]])
+				daughterIndicesList[shuffledNats[k]] = parent1.g[shuffledNats[k]]
+				inDaughter[parent1.g[shuffledNats[k]]] = True #class parent1.g[nsh[k]] is already present in the daughter
 				k+=1
-			parent2g = list(parent2g)
-			for kp2 in range(len(parent2g)):
-				daughterIndicesList[shuffledNats[k]] = parent2g[kp2]
-				k+=1
+			lowestEmptyIndex = 0#lowest index in the daughter gene that is not yet filled
+			while daughterIndicesList[lowestEmptyIndex] != -1:
+				lowestEmptyIndex += 1
+			for k in range(self.roster.numClasses):
+				if not inDaughter[parent2.g[k]]:
+					daughterIndicesList[lowestEmptyIndex] = parent2.g[k]
+					while(lowestEmptyIndex < len(daughterIndicesList)) and (daughterIndicesList[lowestEmptyIndex] != -1):
+						lowestEmptyIndex+=1
 
 			daughter = Gene(self.mutationProbability,self.roster,ordering=daughterIndicesList,fitnessMetric=self.fitnessMetric)
 			daughter.mutate()
@@ -100,7 +101,7 @@ class Genetic:
 		#randomly pair selected individuals
 		np.random.shuffle(breedingPopulation)#maybe cut this step?
 		i = 0
-		while(i + 1 < len(breedingPopulation)):
+		while i + 1 < len(breedingPopulation):
 			parent1 = breedingPopulation[i]
 			parent2 = breedingPopulation[i+1]
 			self.breed(parent1,parent2)
@@ -113,10 +114,13 @@ class Genetic:
 	"""
 	def select(self):
 		partition(self.L,descending=False)
-		newL = []
 		for i in range(int(len(self.L) * MORTALITY_POPULATION_PROPORTION)):
-			if not (np.random.choice([True,False],p=[DIE_PROBABILITY,1-DIE_PROBABILITY])):
-				newL.append(self.L[i])
-		for i in range(int(len(self.L) * MORTALITY_POPULATION_PROPORTION),len(self.L)):
-			newL.append(self.L[i])
-		self.L = newL
+			if (np.random.uniform(0,1) < DIE_PROBABILITY):
+				del self.L[i]
+		# newL = []
+		# for i in range(int(len(self.L) * MORTALITY_POPULATION_PROPORTION)):
+		# 	if not (np.random.choice([True,False],p=[DIE_PROBABILITY,1-DIE_PROBABILITY])):
+		# 		newL.append(self.L[i])
+		# for i in range(int(len(self.L) * MORTALITY_POPULATION_PROPORTION),len(self.L)):
+		# 	newL.append(self.L[i])
+		# self.L = newL

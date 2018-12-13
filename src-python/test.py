@@ -4,7 +4,7 @@ from util import *
 np.random.seed(40)#make the random numbers predictable
 
 epochs = 100
-initialPopulation = 140
+initialPopulation = 70
 numClasses = 41
 numStudents = 80
 mutationProbability = 0.05

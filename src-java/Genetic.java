@@ -283,7 +283,6 @@ public class Genetic
 				dauo[k] = -1;
 			int[] nsh = shuffle(nats(r.numClasses));
 			int idxp1 = r.numClasses>>1;//what indexes do we take from parent 1?
-			//this can duplicate. Fix?
 			for(int k = 0; k < idxp1; k++)
 			{
 				dauo[nsh[k]] = parent1.g[nsh[k]];
@@ -374,7 +373,6 @@ public class Genetic
 	 */
 	void select()
 	{
-
 		L = partitionAsc(L);
 		for(int i = 0; i < L.size()*POPULATION_MORTALITY_PROPORTION; i++)
 		{
