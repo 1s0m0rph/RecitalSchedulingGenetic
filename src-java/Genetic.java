@@ -104,12 +104,12 @@ public class Genetic
 		ArrayList<Integer>[] s = geneToSolution(g);
 		for(int i = 0; i < s.length; i++)
 		{
-			System.out.print("{");
+			System.out.print("[");
 			for(int j = 0; j < s[i].size()-1; j++)
 			{
 				System.out.print(s[i].get(j) + ", ");
 			}
-			System.out.println(s[i].get(s[i].size()-1) + "}");
+			System.out.println(s[i].get(s[i].size()-1) + "]");
 		}
 	}
 	

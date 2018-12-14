@@ -8,9 +8,9 @@ public class test
 	{
 		//generate the original roster randomly, but according to the same seed so we can test multiple configurations on the same roster
 		Random rn = new Random(123);
-//		ArrayList<Integer>[] C = new ArrayList[11];
-//		for(int i = 0; i < C.length; i++)
-//			C[i] = new ArrayList();
+		ArrayList<Integer>[] C = new ArrayList[11];
+		for(int i = 0; i < C.length; i++)
+			C[i] = new ArrayList();
 //		//testing roster, much easier to solve
 //		C[0].add(0);
 //		C[0].add(3);
@@ -52,7 +52,7 @@ public class test
 //		C[10].add(17);
 //		C[10].add(20);
 //		Roster r = new Roster(C,21,rn);
-		Roster r = new Roster(5000, 2000, rn);
+		Roster r = new Roster(41, 80, rn);
 		rn = new Random();//use one seed to generate the roster so it's always the same, then use a random one
 		Gene bestByFitnessRaw = null;
 		int qcbfr = -1;
@@ -63,7 +63,7 @@ public class test
 		int trials = 100;
 		for(int t = 0; t < trials; t++)
 		{
-			Genetic G = new Genetic(r, rn, 0.05, 250, "quickChanges");//change fitnessMetric to "fitness" for the optimization problem
+			Genetic G = new Genetic(r, rn, 0.05, 40, "quickChanges");//change fitnessMetric to "fitness" for the optimization problem
 			double avgFitnessLast = G.avgFitness();
 			int i = 0;
 			for(; i < 500; i++)
@@ -94,7 +94,7 @@ public class test
 //		System.out.println("\nBest solution using fitness score (fitness: " + bestByFitnessRaw.fitness + "; quick changes: " + qcbfr + "):");
 //		sol.showSolution(bestByFitnessRaw);
 		System.out.println("\nBest solution using number of quick changes (fitness: " + bestByQC.fitness + "; quick changes: " + qcbqc + "; generation: " + bestByQC.generation + "):");
-//		sol.showSolution(bestByQC);
+		sol.showSolution(bestByQC);
 //		System.out.println("\nBest solution using fitness score (fitness: " + bestByFitnessRaw.fitness + "; quick changes: " + qcbfr + "):");
 //		System.out.println("\nBest solution using number of quick changes (fitness: " + bestByQC.fitness + "; quick changes: " + qcbqc + "):");
 		System.out.println("\nAverage epochs until convergence:\t" + (epochsUntilConvergenceSum / trials));
